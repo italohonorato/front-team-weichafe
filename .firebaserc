@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "routingapp-ed24f": {
+      "hosting": {
+        "team-weichafe": [
+          "routingapp-ed24f"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "team-weichafe",
+      "public": "dist/team-weichafe",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}

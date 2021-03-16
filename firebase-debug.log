@@ -1,0 +1,42 @@
+[debug] [2021-03-04T22:38:43.681Z] ----------------------------------------------------------------------
+[debug] [2021-03-04T22:38:43.683Z] Command:       /usr/local/bin/node /usr/local/bin/firebase init
+[debug] [2021-03-04T22:38:43.683Z] CLI Version:   9.5.0
+[debug] [2021-03-04T22:38:43.683Z] Platform:      darwin
+[debug] [2021-03-04T22:38:43.683Z] Node Version:  v12.13.1
+[debug] [2021-03-04T22:38:43.684Z] Time:          Thu Mar 04 2021 19:38:43 GMT-0300 (GMT-03:00)
+[debug] [2021-03-04T22:38:43.684Z] ----------------------------------------------------------------------
+[debug] [2021-03-04T22:38:43.684Z] 
+[debug] [2021-03-04T22:38:43.686Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2021-03-04T22:38:43.708Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-03-04T22:38:43.709Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/italohonorato/Desarrollo_Apps/Angular/team-weichafe
+
+Before we get started, keep in mind:
+
+  * You are initializing in an existing Firebase project directory
+
+[debug] [2021-03-04T22:38:44.294Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2021-03-04T22:38:44.295Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2021-03-04T23:38:12.899Z] Error: write EIO
+    at afterWriteDispatched (internal/stream_base_commons.js:150:25)
+    at writeGeneric (internal/stream_base_commons.js:141:3)
+    at WriteStream.Socket._writeGeneric (net.js:771:11)
+    at WriteStream.Socket._write (net.js:783:8)
+    at doWrite (_stream_writable.js:431:12)
+    at writeOrBuffer (_stream_writable.js:415:5)
+    at WriteStream.Writable.write (_stream_writable.js:305:11)
+    at EventEmitter.signalExit.alwaysLast (/usr/local/lib/node_modules/firebase-tools/node_modules/restore-cursor/index.js:7:18)
+    at EventEmitter.emit (events.js:210:5)
+    at EventEmitter.emit (domain.js:475:20)
+    at emit (/usr/local/lib/node_modules/firebase-tools/node_modules/signal-exit/index.js:78:11)
+    at process.listener (/usr/local/lib/node_modules/firebase-tools/node_modules/signal-exit/index.js:94:7)
+    at process.emit (events.js:210:5)
