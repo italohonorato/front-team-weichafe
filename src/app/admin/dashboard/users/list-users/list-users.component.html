@@ -1,48 +1,74 @@
 <div class="container">
-    <div class="mat-elevation-z8 mt-4 mb-4">
-        <table mat-table [dataSource]="dataSource" style="width: 100%;">
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <button type="button" mat-raised-button color="warn" data-toggle="modal" data-target="#registerModal"
+                id="openModalButton" data-backdrop='static' data-keyboard='false'>
+                Registrar Usuario
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mat-elevation-z8 mt-4 mb-4">
+                <table mat-table [dataSource]="dataSource" style="width: 100%;">
 
-            <!-- Nombre Column -->
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef> Nombre </th>
-                <td mat-cell *matCellDef="let element"> {{element?.name}} </td>
-            </ng-container>
+                    <!-- Nombre Column -->
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Nombre </th>
+                        <td mat-cell *matCellDef="let element"> {{element?.name}} </td>
+                    </ng-container>
 
-            <!-- Apellidos Column -->
-            <ng-container matColumnDef="lastName">
-                <th mat-header-cell *matHeaderCellDef> Apellidos </th>
-                <td mat-cell *matCellDef="let element"> {{element?.lastName}} </td>
-            </ng-container>
+                    <!-- Apellidos Column -->
+                    <ng-container matColumnDef="lastName">
+                        <th mat-header-cell *matHeaderCellDef> Apellidos </th>
+                        <td mat-cell *matCellDef="let element"> {{element?.lastName}} </td>
+                    </ng-container>
 
-            <!-- Run Column -->
-            <ng-container matColumnDef="run">
-                <th mat-header-cell *matHeaderCellDef> Rut </th>
-                <td mat-cell *matCellDef="let element"> {{element?.run}} </td>
-            </ng-container>
+                    <!-- Run Column -->
+                    <ng-container matColumnDef="run">
+                        <th mat-header-cell *matHeaderCellDef> Rut </th>
+                        <td mat-cell *matCellDef="let element"> {{element?.run}} </td>
+                    </ng-container>
 
-            <!-- Email Column -->
-            <ng-container matColumnDef="email">
-                <th mat-header-cell *matHeaderCellDef> Email </th>
-                <td mat-cell *matCellDef="let element"> {{element?.email}} </td>
-            </ng-container>
+                    <!-- Email Column -->
+                    <ng-container matColumnDef="email">
+                        <th mat-header-cell *matHeaderCellDef> Email </th>
+                        <td mat-cell *matCellDef="let element"> {{element?.email}} </td>
+                    </ng-container>
 
-            <!-- Dob Column -->
-            <ng-container matColumnDef="dob">
-                <th mat-header-cell *matHeaderCellDef> Fecha nacimiento </th>
-                <td mat-cell *matCellDef="let element"> {{element?.dob | date: 'dd/MM/yyyy HH:mm'}} </td>
-                <!-- <td mat-cell *matCellDef="let element"> {{element.dob | date: 'dd/MM/yyyy HH:mm'}} </td> -->
-            </ng-container>
+                    <!-- Dob Column -->
+                    <ng-container matColumnDef="dob">
+                        <th mat-header-cell *matHeaderCellDef> Fecha nacimiento </th>
+                        <td mat-cell *matCellDef="let element"> {{element?.dob | date: 'dd/MM/yyyy HH:mm'}} </td>
+                        <!-- <td mat-cell *matCellDef="let element"> {{element.dob | date: 'dd/MM/yyyy HH:mm'}} </td> -->
+                    </ng-container>
 
-            <!-- Role Column -->
-            <ng-container matColumnDef="role">
-                <th mat-header-cell *matHeaderCellDef> Perfil </th>
-                <td mat-cell *matCellDef="let element"> {{element?.role?.roleName}} </td>
-            </ng-container>
+                    <!-- Role Column -->
+                    <ng-container matColumnDef="role">
+                        <th mat-header-cell *matHeaderCellDef> Perfil </th>
+                        <td mat-cell *matCellDef="let element"> {{element?.role?.roleName}} </td>
+                    </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+                    <!-- Options Column -->
+                    <ng-container matColumnDef="opciones">
+                        <th mat-header-cell *matHeaderCellDef> Opciones </th>
+                        <td mat-cell *matCellDef="let element">
+                            <button mat-button color="accent" (click)="editUser(element)" matTooltip="Editar">
+                                <span class="material-icons">create</span>
+                            </button>
+                            &nbsp;
+                            <button mat-button color="warn" (click)="removeUser(element.id)" matTooltip="Eliminar">
+                                <span class="material-icons">delete</span>
+                            </button>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
 
-        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+            </div>
+        </div>
     </div>
 </div>
+<app-register-modal [user]="selectedUser" (resetSelectedUserEvent)="resetSelectedUser($event)"></app-register-modal>

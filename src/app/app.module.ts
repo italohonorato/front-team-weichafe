@@ -21,9 +21,9 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
 import { AuthenticationComponent } from './components/authentication/authentication/authentication.component';
-import { AdminModule } from './admin/admin.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FirebaseService } from './services/firebase/firebase.service';
+import { AuthGuard } from './guards/authorization/auth.guard';
 
 
 @NgModule({
@@ -36,7 +36,6 @@ import { FirebaseService } from './services/firebase/firebase.service';
   ],
   imports: [
     BrowserModule,
-    AdminModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
@@ -49,7 +48,7 @@ import { FirebaseService } from './services/firebase/firebase.service';
     AngularFirestoreModule,
     FontAwesomeModule
   ],
-  providers: [FirebaseService],
+  providers: [FirebaseService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

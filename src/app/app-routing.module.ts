@@ -7,7 +7,7 @@ import { HomeComponent } from './components/home/home.component';
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: AuthenticationComponent },
-  // { path: 'admin', loadChildren: () => import('./admin/admin.module').then(module => module.AdminModule) },
+  { path: 'admin', loadChildren: () => import('./admin/admin.module').then(module => module.AdminModule) },
   { path: '**', redirectTo: '/home', pathMatch: 'full' }];
 
 @NgModule({

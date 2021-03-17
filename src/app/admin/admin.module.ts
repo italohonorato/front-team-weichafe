@@ -6,7 +6,6 @@ import { RegisterUserComponent } from './dashboard/users/register-user/register-
 // Modules
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AppRoutingModule } from '../app-routing.module';
 import { AdminRoutingModule } from './admin-routing.module';
 // Angular-Material
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -20,28 +19,27 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 // Firebase
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from 'src/environments/environment';
+import { RegisterModalComponent } from './dashboard/users/list-users/register-modal/register-modal.component';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     ListUsersComponent,
     RegisterUserComponent,
-    AdminNavbarComponent
+    AdminNavbarComponent,
+    RegisterModalComponent
   ],
   imports: [
     CommonModule,
     AdminRoutingModule,
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
     MatToolbarModule,
     MatIconModule,
     MatSidenavModule,
@@ -53,10 +51,17 @@ import { environment } from 'src/environments/environment';
     MatNativeDateModule,
     MatTableModule,
     MatPaginatorModule,
+    MatSelectModule,
+    MatTooltipModule,
     ReactiveFormsModule,
-    // AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule
+  ],
+  exports: [
+    DashboardComponent,
+    ListUsersComponent,
+    RegisterUserComponent,
+    AdminNavbarComponent
   ]
 })
 export class AdminModule { }

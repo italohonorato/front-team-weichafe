@@ -45,7 +45,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         } else {
           Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
           this.activate = false;
-          this.router.navigate(['/login']);
+          this.router.navigate(['/home']);
         }
 
         return this.activate;

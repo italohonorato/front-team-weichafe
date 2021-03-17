@@ -15,9 +15,9 @@ export class ListUsersComponent implements OnInit, OnDestroy {
 
   getAllUsersSubscription: Subscription;
   usersList: User[];
-  displayedColumns: string[] = ['name', 'lastName', 'run', 'email', 'dob', 'role'];
+  displayedColumns: string[] = ['name', 'lastName', 'run', 'email', 'dob', 'role', 'opciones'];
   dataSource;
-
+  selectedUser: User;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
   constructor(private firStoreService: FirestoreService) { }
@@ -57,4 +57,18 @@ export class ListUsersComponent implements OnInit, OnDestroy {
     });
   }
 
+  editUser(user: User) {
+    this.selectedUser = user;
+    document.getElementById('openModalButton').click();
+  }
+
+  removeUser(user: User) {
+
+  }
+
+  resetSelectedUser(value: boolean) {
+    if (value) {
+      this.selectedUser = undefined;
+    }
+  }
 }

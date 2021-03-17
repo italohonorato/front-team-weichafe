@@ -1,0 +1,82 @@
+<div id="registerModal" class="modal fade modal-dialog-centered" role="dialog" aria-hidden="true"
+    style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+                <h5 class="modal-title text-white">Formulario Registro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closebutton
+                    (click)="resetTaskForm()">
+                    <span aria-hidden="true" class="text-white">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body bg-light">
+                <form role="form" id="registerForm" [formGroup]="registerForm">
+                    <!-- User Name -->
+                    <div class="form-group">
+                        <input class="form-control" formControlName="name" placeholder="Nombre" />
+                        <div class="alert alert-danger" *ngIf="name.invalid && (name.dirty || name.touched)">
+                            <div *ngIf="name.errors.required">Favor ingrese Nombre</div>
+                        </div>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="form-group">
+                        <input class="form-control" formControlName="lastName" placeholder="Apellidos" />
+                        <div class="alert alert-danger"
+                            *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">
+                            <div *ngIf="lastName.errors.required">Favor ingrese Apellidos</div>
+                        </div>
+                    </div>
+
+                    <!-- Rut -->
+                    <div class="form-group">
+                        <input class="form-control" formControlName="rut" placeholder="Rut" (blur)="formatRut()" />
+                        <div class="alert alert-danger" *ngIf="rut.invalid && (rut.dirty || rut.touched)">
+                            <div *ngIf="rut.errors.required">Favor ingrese Rut</div>
+                        </div>
+                    </div>
+                    <!-- Email -->
+                    <div class="form-group">
+                        <input type="email" class="form-control" formControlName="email" placeholder="Email" />
+                        <div class="alert alert-danger" *ngIf="email.invalid && (email.dirty || email.touched)">
+                            <div *ngIf="email.errors.required">Favor ingrese Email</div>
+                            <div *ngIf="email.errors.email">Formato Email no es válido</div>
+                        </div>
+                    </div>
+                    <!-- Pass -->
+                    <div class="form-group">
+                        <input type="password" class="form-control" formControlName="pass" placeholder="Contraseña" />
+                        <div class="alert alert-danger" *ngIf="pass.invalid && (pass.dirty || pass.touched)">
+                            <div *ngIf="pass.errors.required">Favor ingrese Contraseña</div>
+                        </div>
+                    </div>
+                    <!-- Dob -->
+                    <div class="form-group">
+                        <input type="date" class="form-control" formControlName="dob" placeholder="Fecha Nacimiento" />
+                        <div class="alert alert-danger" *ngIf="dob.invalid && (dob.dirty || dob.touched)">
+                            <div *ngIf="dob.errors.required">Favor ingrese Fecha Nacimiento</div>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger" *ngIf="dob.invalid && (dob.dirty || dob.touched)">
+                        <div *ngIf="dob.errors.required">Requerido</div>
+                    </div>
+                    <!-- Roles -->
+                    <div class="form-group">
+                        <select class="custom-select" id="roles" formControlName="role">
+                            <option selected>Perfil...</option>
+                            <option *ngFor="let item of roles" [value]="item">{{item.roleName}}</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" id="closeModal"
+                    (click)='resetTaskForm()'>Cerrar</button>
+                <button [disabled]="registerForm.invalid" class="btn btn-danger btn-sm"
+                    (click)="onCreate()">Guardar</button>
+                <!-- <button [disabled]="registerForm.invalid" class="btn btn-danger btn-sm" (click)="onUpdate()"
+                    *ngIf="idTask">Editar</button> -->
+            </div>
+        </div>
+    </div>
+</div>

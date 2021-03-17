@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Validators, FormBuilder } from '@angular/forms';
 import { Role } from 'src/app/interfaces/role';
 import { User } from 'src/app/interfaces/user';
 import { FirebaseService } from 'src/app/services/firebase/firebase.service';
@@ -8,11 +8,11 @@ import { UtilService } from 'src/app/services/util/util.service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-register-user',
-  templateUrl: './register-user.component.html',
-  styleUrls: ['./register-user.component.css']
+  selector: 'app-register-modal',
+  templateUrl: './register-modal.component.html',
+  styleUrls: ['./register-modal.component.css']
 })
-export class RegisterUserComponent implements OnInit {
+export class RegisterModalComponent implements OnInit, OnChanges {
 
   registerForm = this.formBuilder.group({
     name: ['', Validators.required],
@@ -20,8 +20,8 @@ export class RegisterUserComponent implements OnInit {
     email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
     pass: ['', Validators.required],
     rut: ['', Validators.required],
-    dob: ['', Validators.required],
-    role: [[''], Validators.required],
+    dob: [''],
+    role: [[''], Validators.required]
   });
 
   public roles: Role[] = new Array<Role>();
@@ -32,15 +32,58 @@ export class RegisterUserComponent implements OnInit {
   get rut() { return this.registerForm.get('rut') }
   get dob() { return this.registerForm.get('dob') }
   get role() { return this.registerForm.get('role') }
+  @Input() user: User;
+  @Output() resetSelectedUserEvent = new EventEmitter<boolean>();
 
-  constructor(
-    private formBuilder: FormBuilder,
+  constructor(private formBuilder: FormBuilder,
     private fireStoreService: FirestoreService,
     private fireBaseService: FirebaseService,
-    private utilService: UtilService) { }
+    private utilService: UtilService) {
+
+  }
+
+  resetSelectedUserValue(value: boolean) {
+    this.resetSelectedUserEvent.emit(value);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    for (let propName in changes) {
+      if (propName === 'user' && changes[propName].currentValue !== undefined) {
+        this.loadUserInfo();
+      }
+    }
+  }
 
   ngOnInit() {
     this.fireStoreService.getAllRoles().subscribe(roles => this.roles.push(...roles));
+  }
+
+  loadUserInfo() {
+    let dobFormatted = this.user.dob ? this.utilService.formatDate(this.user.dob, 'dd/MM/yyyy') : '';
+    console.log(`DOB -> ${dobFormatted}`);
+
+    this.registerForm.patchValue({
+      name: this.user.name,
+      lastName: this.user.lastName,
+      email: this.user.email,
+      rut: this.user.rut + this.user.dv,
+      dob: dobFormatted,
+      role: [''],
+    });
+  }
+
+  resetTaskForm() {
+    this.user = undefined;
+    this.resetSelectedUserValue(true);
+    this.registerForm.patchValue({
+      name: [''],
+      lastName: [''],
+      email: [''],
+      pass: [''],
+      rut: [''],
+      dob: [''],
+      role: [['']],
+    });
   }
 
   formatRut() {
@@ -93,7 +136,11 @@ export class RegisterUserComponent implements OnInit {
     }
   }
 
-  onUpdate() {
+  editUser(userRef: User) {
+
+  }
+
+  removeUser(userRef: User) {
 
   }
 }
