@@ -1,4 +1,4 @@
-import { Role } from "./role";
+import { Role } from './role';
 
 export interface User {
     uid: string;
@@ -8,6 +8,5 @@ export interface User {
     rut: number;
     dv: string;
     dob?: Date;
-    run?: string;
     role?: Role;
 }

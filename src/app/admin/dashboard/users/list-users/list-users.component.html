@@ -15,38 +15,39 @@
                     <!-- Nombre Column -->
                     <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef> Nombre </th>
-                        <td mat-cell *matCellDef="let element"> {{element?.name}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element?.data?.name}} </td>
                     </ng-container>
 
                     <!-- Apellidos Column -->
                     <ng-container matColumnDef="lastName">
                         <th mat-header-cell *matHeaderCellDef> Apellidos </th>
-                        <td mat-cell *matCellDef="let element"> {{element?.lastName}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element?.data?.lastName}} </td>
                     </ng-container>
 
                     <!-- Run Column -->
                     <ng-container matColumnDef="run">
                         <th mat-header-cell *matHeaderCellDef> Rut </th>
-                        <td mat-cell *matCellDef="let element"> {{element?.run}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element?.data?.rut ? formatRut(element?.data?.rut,
+                            element?.data?.dv) : ''}}
+                        </td>
                     </ng-container>
 
                     <!-- Email Column -->
                     <ng-container matColumnDef="email">
                         <th mat-header-cell *matHeaderCellDef> Email </th>
-                        <td mat-cell *matCellDef="let element"> {{element?.email}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element?.data?.email}} </td>
                     </ng-container>
 
                     <!-- Dob Column -->
                     <ng-container matColumnDef="dob">
                         <th mat-header-cell *matHeaderCellDef> Fecha nacimiento </th>
-                        <td mat-cell *matCellDef="let element"> {{element?.dob | date: 'dd/MM/yyyy HH:mm'}} </td>
-                        <!-- <td mat-cell *matCellDef="let element"> {{element.dob | date: 'dd/MM/yyyy HH:mm'}} </td> -->
+                        <td mat-cell *matCellDef="let element"> {{element?.data?.dob | date: 'dd/MM/yyyy'}} </td>
                     </ng-container>
 
                     <!-- Role Column -->
                     <ng-container matColumnDef="role">
                         <th mat-header-cell *matHeaderCellDef> Perfil </th>
-                        <td mat-cell *matCellDef="let element"> {{element?.role?.roleName}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element?.data?.role?.roleName}} </td>
                     </ng-container>
 
                     <!-- Options Column -->
@@ -57,7 +58,7 @@
                                 <span class="material-icons">create</span>
                             </button>
                             &nbsp;
-                            <button mat-button color="warn" (click)="removeUser(element.id)" matTooltip="Eliminar">
+                            <button mat-button color="warn" (click)="removeUser(element)" matTooltip="Eliminar">
                                 <span class="material-icons">delete</span>
                             </button>
                         </td>

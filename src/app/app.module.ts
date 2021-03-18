@@ -32,7 +32,7 @@ import { AuthGuard } from './guards/authorization/auth.guard';
     FooterComponent,
     HomeComponent,
     NavbarComponent,
-    AuthenticationComponent,
+    AuthenticationComponent
   ],
   imports: [
     BrowserModule,
