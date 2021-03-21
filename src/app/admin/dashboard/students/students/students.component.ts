@@ -45,6 +45,7 @@ export class StudentsComponent implements OnInit {
         userDoc.data = this.extractUserData(userData.payload.doc.data());
         return userDoc;
       });
+      this.userDocList.sort((a, b) => (a.data.lastName > b.data.lastName) ? 1 : (b.data.lastName > a.data.lastName) ? -1 : 0);
       this.dataSource = new MatTableDataSource<UserDoc>(this.userDocList);
       this.dataSource.paginator = this.paginator;
     }, error => {

@@ -3,9 +3,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Validators, FormBuilder } from '@angular/forms';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
+import { Assistance } from 'src/app/interfaces/assistance';
 import { Sections } from 'src/app/interfaces/sections';
 import { User } from 'src/app/interfaces/user';
 import { UserDoc } from 'src/app/models/user/user-doc';
+import { AssistanceService } from 'src/app/services/firestore/assistance/assistance.service';
 import { SectionsService } from 'src/app/services/firestore/sections/sections.service';
 import { UsersService } from 'src/app/services/firestore/users/users.service';
 import { UtilService } from 'src/app/services/util/util.service';
@@ -30,18 +32,19 @@ export class IngresarAsistenciaComponent implements OnInit {
 
   // Form
   assistanceForm = this.formBuilder.group({
-    assitanceDate: ['', Validators.required],
+    assistanceDate: ['', Validators.required],
     section: [[], Validators.required]
   });
   // Getters assistanceForm
-  get assitanceDate() { return this.assistanceForm.get('assitanceDate') }
+  get assistanceDate() { return this.assistanceForm.get('assistanceDate') }
   get section() { return this.assistanceForm.get('section') }
 
   constructor(
     private formBuilder: FormBuilder,
     private userService: UsersService,
-    private uitlService: UtilService,
-    private sectionsService: SectionsService) { }
+    private utilService: UtilService,
+    private sectionsService: SectionsService,
+    private assistanceService: AssistanceService) { }
 
   ngOnDestroy(): void {
     console.log('Ejecuntando ngOnDestroy...');
@@ -68,6 +71,10 @@ export class IngresarAsistenciaComponent implements OnInit {
     this.getAllUsersSubscription = this.userService.getUsersBySection(sectionSelected).subscribe(
       snapshot => {
         let rowCount = 0;
+        snapshot.sort((a, b) =>
+          (a.payload.doc.data()['lastName'] > b.payload.doc.data()['lastName']) ?
+            1 : (b.payload.doc.data()['lastName'] > a.payload.doc.data()['lastName']) ?
+              -1 : 0);
         this.userDocList = snapshot.map(userData => {
           let userDoc: UserDoc = new UserDoc();
           userDoc.position = ++rowCount;
@@ -78,7 +85,7 @@ export class IngresarAsistenciaComponent implements OnInit {
         this.dataSource = new MatTableDataSource<UserDoc>(this.userDocList);
         this.dataSource.paginator = this.paginator;
       }, error => {
-        console.log(`ListUsersComponent::getAllUsers Error -> ${error}`);
+        console.log(`IngresarAsistenciaComponent::getUsersBySection Error -> ${error}`);
         Swal.fire('Error al consultar Usuarios', error, 'error');
       }
     );
@@ -100,9 +107,47 @@ export class IngresarAsistenciaComponent implements OnInit {
   }
 
   formatRut(run: number, dv: string) {
-    return this.uitlService.formatRut(run.toString() + dv);
+    return this.utilService.formatRut(run.toString() + dv);
   }
 
+  addAssitance() {
+    const numSelected = this.selection.selected.length;
+    if (numSelected && numSelected > 0) {
+      const selectedStudents = this.selection.selected;
+      const list = selectedStudents.map(student => {
+        const studentInfo: User = {
+          email: student.data.email ? student.data.email : '',
+          name: student.data.name,
+          lastName: student.data.lastName,
+          dob: student.data.dob,
+          rut: student.data.rut,
+          dv: student.data.dv,
+          section: student.data.section
+        };
+
+        return studentInfo;
+      });
+
+      const assistanceDate = this.assistanceForm.get('assistanceDate').value;
+      const sectionSelected = this.assistanceForm.get('section').value;
+      let assistance: Assistance = {
+        assistance_date: assistanceDate,
+        section: sectionSelected,
+        user_list: list,
+      }
+
+      this.assistanceService.createAssistance(assistance).then(response => {
+        Swal.fire('Asistencia Ingresado',
+          `Se ha ingresado asistencia para la sección ${sectionSelected} con fecha ${assistanceDate}`,
+          'success');
+      }).catch(error => {
+        console.log(`IngresarAsistenciaComponent::getUsersBySection Error -> ${error}`);
+        Swal.fire('Error al ingresar Asistencia', error, 'error');
+      });
+    } else {
+      Swal.fire('Advertencia', 'Debe al menos seleccionar un alumno del listado', 'warning');
+    }
+  }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {

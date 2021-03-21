@@ -4,6 +4,7 @@
             <h1 class="text-white">Ingresar Asistencia</h1>
         </div>
     </div>
+    <mat-divider></mat-divider>
     <div class="row mt-4">
         <div class="col-md-12 text-white">
             <form id="registerForm" [formGroup]="assistanceForm">
@@ -13,10 +14,10 @@
                         <label for="assitanceDate" class="col-form-label">Fecha Asistencia</label>
                     </div>
                     <div class="col-md-2">
-                        <input type="date" class="form-control" formControlName="assitanceDate">
+                        <input type="date" class="form-control" formControlName="assistanceDate">
                         <div class="alert alert-danger"
-                            *ngIf="assitanceDate.invalid && (assitanceDate.dirty || assitanceDate.touched)">
-                            <div *ngIf="assitanceDate.errors.required">Favor ingrese Fecha Asistencia</div>
+                            *ngIf="assistanceDate.invalid && (assistanceDate.dirty || assistanceDate.touched)">
+                            <div *ngIf="assistanceDate.errors.required">Favor ingrese Fecha Asistencia</div>
                         </div>
                     </div>
                     <!-- Sections -->
@@ -34,7 +35,8 @@
                     </div>
                 </div>
                 <div class="form-row mt-4 ml-1">
-                    <button type="button" [disabled]="assistanceForm.invalid" mat-raised-button color="warn">
+                    <button type="button" [disabled]="assistanceForm.invalid" mat-raised-button color="warn"
+                        (click)="addAssitance()">
                         Ingresar
                     </button>
                 </div>
