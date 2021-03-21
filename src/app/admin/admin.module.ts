@@ -2,7 +2,10 @@
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AdminNavbarComponent } from './dashboard/navbar/admin.navbar.component';
 import { ListUsersComponent } from './dashboard/users/list-users/list-users.component';
-import { RegisterUserComponent } from './dashboard/users/register-user/register-user.component';
+import { IngresarAsistenciaComponent } from './dashboard/asistencia/ingresar-asistencia/ingresar-asistencia.component';
+import { RegisterModalComponent } from './dashboard/users/list-users/register-modal/register-modal.component';
+import { StudentsComponent } from './dashboard/students/students/students.component';
+import { RegisterStudentComponent } from './dashboard/students/students/register-student/register-student/register-student.component';
 // Modules
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -21,21 +24,24 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 // Firebase
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { ReactiveFormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
-import { RegisterModalComponent } from './dashboard/users/list-users/register-modal/register-modal.component';
+import { AuthGuard } from '../guards/authorization/auth.guard';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     ListUsersComponent,
-    RegisterUserComponent,
     AdminNavbarComponent,
-    RegisterModalComponent
+    RegisterModalComponent,
+    IngresarAsistenciaComponent,
+    StudentsComponent,
+    RegisterStudentComponent
   ],
   imports: [
     CommonModule,
@@ -53,6 +59,7 @@ import { RegisterModalComponent } from './dashboard/users/list-users/register-mo
     MatPaginatorModule,
     MatSelectModule,
     MatTooltipModule,
+    MatCheckboxModule,
     ReactiveFormsModule,
     AngularFireAuthModule,
     AngularFirestoreModule
@@ -60,7 +67,6 @@ import { RegisterModalComponent } from './dashboard/users/list-users/register-mo
   exports: [
     DashboardComponent,
     ListUsersComponent,
-    RegisterUserComponent,
     AdminNavbarComponent
   ]
 })

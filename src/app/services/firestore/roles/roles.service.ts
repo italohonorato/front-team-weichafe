@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Action, AngularFirestore, AngularFirestoreDocument, DocumentChangeAction, DocumentSnapshot } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreDocument, DocumentChangeAction } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Role } from 'src/app/interfaces/role';
 
@@ -12,9 +12,10 @@ export class RolesService {
 
   constructor(private fireStore: AngularFirestore) { }
 
-  getRol(documentId: string): Observable<Action<DocumentSnapshot<unknown>>> {
+  getRol(documentId: string): AngularFirestoreDocument<unknown> {
     try {
-      return this.rolesRef.doc(documentId).snapshotChanges();
+      return this.rolesRef.doc(documentId);
+      // return this.rolesRef.doc(documentId).snapshotChanges();
     } catch (error) {
       console.log(`RolesService::getRol Error -> ${error}`);
       return error;
@@ -24,6 +25,15 @@ export class RolesService {
   getAllRoles(): Observable<DocumentChangeAction<unknown>[]> {
     try {
       return this.rolesRef.snapshotChanges();
+    } catch (error) {
+      console.log(`RolesService::getAllRoles Error -> ${error}`);
+      return error;
+    }
+  }
+
+  getRoleByName(roleName: string): Observable<DocumentChangeAction<unknown>[]> {
+    try {
+      return this.fireStore.collection('roles', ref => ref.where('roleName', '==', roleName)).snapshotChanges();
     } catch (error) {
       console.log(`RolesService::getAllRoles Error -> ${error}`);
       return error;

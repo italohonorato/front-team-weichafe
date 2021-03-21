@@ -3,18 +3,22 @@ import { Routes, RouterModule } from '@angular/router';
 // Components
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ListUsersComponent } from './dashboard/users/list-users/list-users.component';
-import { RegisterUserComponent } from './dashboard/users/register-user/register-user.component';
 // Guard
 import { AuthGuard } from '../guards/authorization/auth.guard';
+import { IngresarAsistenciaComponent } from './dashboard/asistencia/ingresar-asistencia/ingresar-asistencia.component';
+import { StudentsComponent } from './dashboard/students/students/students.component';
 
 
 const routes: Routes = [
   {
-    path: '', children: [{
-      path: 'dashboard', component: DashboardComponent,
+    path: '',
+    children: [{
+      path: 'dashboard',
+      component: DashboardComponent,
       children: [
-        { path: 'registerUser', component: RegisterUserComponent },
-        { path: 'listUsers', component: ListUsersComponent },
+        { path: 'registerUser', component: ListUsersComponent },
+        { path: 'addAssistence', component: IngresarAsistenciaComponent },
+        { path: 'registerStudent', component: StudentsComponent }
       ]
     }]
   }

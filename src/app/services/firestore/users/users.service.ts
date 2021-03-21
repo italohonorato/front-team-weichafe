@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Action, AngularFirestore, DocumentChangeAction, DocumentSnapshot } from '@angular/fire/firestore';
+import { Action, AngularFirestore, AngularFirestoreCollection, DocumentChangeAction, DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/interfaces/user';
 
@@ -34,6 +34,15 @@ export class UsersService {
   getAllUsers(): Observable<DocumentChangeAction<unknown>[]> {
     try {
       return this.userRef.snapshotChanges();
+    } catch (error) {
+      console.log(`UsersService::getAllUsers Error -> ${error}`);
+      return error;
+    }
+  }
+
+  getUsersBySection(section: string): Observable<DocumentChangeAction<unknown>[]> {
+    try {
+      return this.fireStore.collection('users', ref => ref.where('section', '==', section)).snapshotChanges();
     } catch (error) {
       console.log(`UsersService::getAllUsers Error -> ${error}`);
       return error;

@@ -1,31 +1,25 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { DocumentReference } from '@angular/fire/firestore';
-import { FormBuilder, Validators } from '@angular/forms';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
-import { Role } from 'src/app/interfaces/role';
-import { Sections } from 'src/app/interfaces/sections';
 import { User } from 'src/app/interfaces/user';
 import { RoleDoc } from 'src/app/models/role/role-doc';
 import { UserDoc } from 'src/app/models/user/user-doc';
-import { FirebaseService } from 'src/app/services/firebase/firebase.service';
-import { FirestoreService } from 'src/app/services/firestore/firestore.service';
-import { SectionsService } from 'src/app/services/firestore/sections/sections.service';
 import { UsersService } from 'src/app/services/firestore/users/users.service';
 import { UtilService } from 'src/app/services/util/util.service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-list-users',
-  templateUrl: './list-users.component.html',
-  styleUrls: ['./list-users.component.css']
+  selector: 'app-students',
+  templateUrl: './students.component.html',
+  styleUrls: ['./students.component.css']
 })
-export class ListUsersComponent implements OnInit, OnDestroy {
+export class StudentsComponent implements OnInit {
 
   getAllUsersSubscription: Subscription;
   usersList: User[];
   userDocList: UserDoc[];
-  displayedColumns: string[] = ['name', 'lastName', 'run', 'email', 'dob', 'role', 'section', 'opciones'];
+  displayedColumns: string[] = ['name', 'lastName', 'run', 'email', 'dob', 'section', 'opciones'];
   dataSource;
   selectedUser: UserDoc;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -49,11 +43,6 @@ export class ListUsersComponent implements OnInit, OnDestroy {
         let userDoc: UserDoc = new UserDoc();
         userDoc.id = userData.payload.doc.id;
         userDoc.data = this.extractUserData(userData.payload.doc.data());
-        this.getRoleAsRoleDoc(userDoc.data.role)
-          .then(response => {
-            userDoc.roleDoc = response;
-            console.log(`Role: ${response.data.roleName}`);
-          });
         return userDoc;
       });
       this.dataSource = new MatTableDataSource<UserDoc>(this.userDocList);
@@ -73,7 +62,6 @@ export class ListUsersComponent implements OnInit, OnDestroy {
       rut: data['rut'],
       dv: data['dv'],
       dob: data['dob'] ? data['dob'] : undefined,
-      role: data['role'],
       section: data['section']
     };
 
@@ -119,21 +107,4 @@ export class ListUsersComponent implements OnInit, OnDestroy {
     return this.uitlService.formatRut(run.toString() + dv);
   }
 
-  getRoleAsRoleDoc(ref: DocumentReference) {
-
-    return ref.get().then(documentSnapshot => {
-      let roleDoc = new RoleDoc();
-      if (documentSnapshot.exists) {
-        let roleData = documentSnapshot.data();
-        roleDoc.id = documentSnapshot.id;
-        roleDoc.ref = documentSnapshot.ref;
-        roleDoc.data = {
-          enabled: roleData['enabled'],
-          roleName: roleData['roleName']
-        }
-      }
-
-      return roleDoc;
-    })
-  }
 }

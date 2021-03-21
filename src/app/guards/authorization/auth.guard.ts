@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router, CanActivateChild } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router, CanActivateChild, CanLoad, Route, UrlSegment } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FirebaseService } from 'src/app/services/firebase/firebase.service';
 import Swal from 'sweetalert2';
@@ -7,12 +7,33 @@ import Swal from 'sweetalert2';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate, CanActivateChild {
+export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   private activate = false;
+
   constructor(
     private fireBaseService: FirebaseService,
     private router: Router
   ) { }
+
+  canLoad(route: Route, segments: UrlSegment[]): boolean | Promise<boolean> | Observable<boolean> {
+    try {
+      this.fireBaseService.currentUser().then(response => {
+        if (response !== null && response.uid !== null) {
+          this.activate = true;
+        } else {
+          Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
+          this.activate = false;
+          this.router.navigate(['/login']);
+        }
+        console.log('canLoad -> ' + this.activate);
+        return this.activate;
+      });
+    } catch (error) {
+      console.log('Error AuthGuard::canLoad ->' + error);
+      Swal.fire('Acceso Denegado', 'Ruta protegida', 'info');
+      return this.activate;
+    }
+  }
 
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     try {
@@ -25,7 +46,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
           this.activate = false;
           this.router.navigate(['/login']);
         }
-
+        console.log('CanActivateChild -> ' + this.activate);
         return this.activate;
       });
     } catch (error) {
@@ -47,7 +68,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
           this.activate = false;
           this.router.navigate(['/home']);
         }
-
+        console.log('CanActivate -> ' + this.activate);
         return this.activate;
       });
     } catch (error) {

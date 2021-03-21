@@ -1,11 +1,15 @@
+import { stringify } from '@angular/compiler/src/util';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { DocumentReference } from '@angular/fire/firestore';
 import { Validators, FormBuilder } from '@angular/forms';
 import { Role } from 'src/app/interfaces/role';
+import { Sections } from 'src/app/interfaces/sections';
 import { User } from 'src/app/interfaces/user';
 import { RoleDoc } from 'src/app/models/role/role-doc';
 import { UserDoc } from 'src/app/models/user/user-doc';
 import { FirebaseService } from 'src/app/services/firebase/firebase.service';
 import { RolesService } from 'src/app/services/firestore/roles/roles.service';
+import { SectionsService } from 'src/app/services/firestore/sections/sections.service';
 import { UsersService } from 'src/app/services/firestore/users/users.service';
 import { UtilService } from 'src/app/services/util/util.service';
 import Swal from 'sweetalert2';
@@ -18,10 +22,11 @@ import Swal from 'sweetalert2';
 export class RegisterModalComponent implements OnInit, OnChanges {
 
   public roles: RoleDoc[] = new Array<RoleDoc>();
+  public sections: Sections[] = new Array<Sections>();
   @Input() user: UserDoc;
   @Output() resetSelectedUserEvent = new EventEmitter<boolean>();
   @ViewChild('closebutton', { static: true }) closebutton;
-
+  // Form
   registerForm = this.formBuilder.group({
     name: ['', Validators.required],
     lastName: ['', Validators.required],
@@ -29,7 +34,8 @@ export class RegisterModalComponent implements OnInit, OnChanges {
     pass: ['', Validators.required],
     rut: ['', Validators.required],
     dob: ['', Validators.required],
-    role: [[''], Validators.required]
+    role: [[RoleDoc], Validators.required],
+    section: [[], Validators.required]
   });
   // Getters registerForm
   get name() { return this.registerForm.get('name') }
@@ -39,13 +45,15 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   get rut() { return this.registerForm.get('rut') }
   get dob() { return this.registerForm.get('dob') }
   get role() { return this.registerForm.get('role') }
+  get section() { return this.registerForm.get('section') }
 
   constructor(
     private formBuilder: FormBuilder,
     private fireBaseService: FirebaseService,
     private utilService: UtilService,
     private usersService: UsersService,
-    private rolesService: RolesService) {
+    private rolesService: RolesService,
+    private sectionsService: SectionsService) {
 
   }
 
@@ -62,6 +70,11 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.getAllRoles();
+    this.getAllSections();
+  }
+
+  getAllRoles() {
     this.rolesService.getAllRoles().subscribe(snapshot => {
       this.roles = snapshot.map(data => {
         let rolDoc = new RoleDoc();
@@ -71,6 +84,18 @@ export class RegisterModalComponent implements OnInit, OnChanges {
         return rolDoc;
       });
     });
+  }
+
+  getAllSections() {
+    this.sectionsService.getAllSections().subscribe(snapshot => {
+      this.sections = snapshot.map(data => {
+        let unknownObj = data.payload.doc.data();
+        let section = {
+          name: unknownObj['name']
+        }
+        return section;
+      });
+    })
   }
 
   extractRoleData(data: unknown): Role {
@@ -83,16 +108,15 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   }
 
   loadUserInfo() {
-    let dobFormatted = this.user.data.dob ? this.utilService.formatDate(this.user.data.dob, 'dd/MM/yyyy') : '';
-    console.log(`DOB -> ${dobFormatted}`);
-
     this.registerForm.patchValue({
       name: this.user.data.name,
       lastName: this.user.data.lastName,
       email: this.user.data.email,
       rut: this.utilService.formatRut(this.user.data.rut + this.user.data.dv),
-      dob: dobFormatted,
-      role: [''],
+      dob: this.user.data.dob,
+      pass: ['xxx'],
+      role: this.user.roleDoc.id,
+      section: this.user.data.section
     });
   }
 
@@ -107,6 +131,7 @@ export class RegisterModalComponent implements OnInit, OnChanges {
       rut: [''],
       dob: [''],
       role: [['']],
+      section: [['']],
     });
   }
 
@@ -119,7 +144,8 @@ export class RegisterModalComponent implements OnInit, OnChanges {
 
   onCreate() {
     try {
-      let roleDoc = this.registerForm.get('role').value as RoleDoc;
+      let idRolSelected = this.registerForm.get('role').value;
+      let roleSelected = this.roles.find(role => role.id === idRolSelected);
       this.fireBaseService.createUser(this.registerForm.get('email').value, this.registerForm.get('pass').value)
         .then(response => {
           if (response !== undefined && response.user.uid) {
@@ -132,7 +158,8 @@ export class RegisterModalComponent implements OnInit, OnChanges {
               dob: this.registerForm.get('dob').value,
               rut: +this.utilService.removeDotsAndDvRut(this.registerForm.get('rut').value),
               dv: this.utilService.getDvRut(this.registerForm.get('rut').value),
-              role: null
+              role: roleSelected.ref,
+              section: this.registerForm.get('section').value
             };
             // Creates User on FireStore
             this.usersService.createUser(userInfo).then(fssResponse => {
@@ -168,7 +195,8 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   }
 
   onUpdate() {
-    let roleDoc = this.registerForm.get('role').value as RoleDoc;
+    let idRolSelected = this.registerForm.get('role').value;
+    let roleSelected = this.roles.find(role => role.id === idRolSelected);
     const userUpdated: User = {
       uid: this.user.data.uid,
       email: this.registerForm.get('email').value,
@@ -177,7 +205,8 @@ export class RegisterModalComponent implements OnInit, OnChanges {
       dob: this.registerForm.get('dob').value,
       rut: +this.utilService.removeDotsAndDvRut(this.registerForm.get('rut').value),
       dv: this.utilService.getDvRut(this.registerForm.get('rut').value),
-      role: null
+      role: roleSelected.ref,
+      section: this.registerForm.get('section').value
     };
 
     this.usersService.updateUser(this.user.id, userUpdated).then(response => {
