@@ -25,7 +25,7 @@ export class ListUsersComponent implements OnInit, OnDestroy {
   getAllUsersSubscription: Subscription;
   usersList: User[];
   userDocList: UserDoc[];
-  displayedColumns: string[] = ['name', 'lastName', 'run', 'email', 'dob', 'role', 'section', 'opciones'];
+  displayedColumns: string[] = ['name', 'lastName', 'run', 'email', 'dob', 'role', 'opciones'];
   dataSource;
   selectedUser: UserDoc;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -57,6 +57,7 @@ export class ListUsersComponent implements OnInit, OnDestroy {
         return userDoc;
       });
       this.userDocList.sort((a, b) => (a.data.lastName > b.data.lastName) ? 1 : (b.data.lastName > a.data.lastName) ? -1 : 0);
+      this.userDocList = this.userDocList.filter(user => user.data.uid !== undefined);
       this.dataSource = new MatTableDataSource<UserDoc>(this.userDocList);
       this.dataSource.paginator = this.paginator;
     }, error => {
@@ -74,8 +75,7 @@ export class ListUsersComponent implements OnInit, OnDestroy {
       rut: data['rut'],
       dv: data['dv'],
       dob: data['dob'] ? data['dob'] : undefined,
-      role: data['role'],
-      section: data['section']
+      role: data['role']
     };
 
     return user;

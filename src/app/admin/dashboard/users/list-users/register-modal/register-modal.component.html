@@ -52,8 +52,9 @@
                         <div class="col-sm-10">
                             <input type="email" class="form-control" formControlName="email" id="email" />
                             <div class="alert alert-danger" *ngIf="email.invalid && (email.dirty || email.touched)">
-                                <div *ngIf="email.errors.required">Favor ingrese Email</div>
-                                <div *ngIf="email.errors.email">Formato Email no es válido</div>
+                                <div *ngIf="email.errors?.required">Favor ingrese Email</div>
+                                <div *ngIf="email.errors?.email">Formato Email incorrecto</div>
+                                <div *ngIf="email.errors?.pattern">Patrón Email incorrecto</div>
                             </div>
                         </div>
                     </div>
@@ -64,7 +65,8 @@
                         <div class="col-sm-10">
                             <input type="password" class="form-control" formControlName="pass" id="pass" />
                             <div class="alert alert-danger" *ngIf="pass.invalid && (pass.dirty || pass.touched)">
-                                <div *ngIf="pass.errors.required">Favor ingrese Contraseña</div>
+                                <div *ngIf="pass.errors?.required">Favor ingrese Contraseña</div>
+                                <div *ngIf="pass.errors?.minlength">Contraseña minimo debe tener 6 carácteres</div>
                             </div>
                         </div>
                     </div>
@@ -90,20 +92,6 @@
                             </select>
                             <div class="alert alert-danger" *ngIf="role.invalid && (role.dirty || role.touched)">
                                 <div *ngIf="role.errors.required">Requerido</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sections -->
-                    <div class="form-group row">
-                        <label for="sections" class="col-sm-2 col-form-label">Nivel</label>
-                        <div class="col-sm-10">
-                            <select class="custom-select" id="sections" formControlName="section" id="sections">
-                                <option *ngFor="let item of sections" [value]="item.name">{{item.name}}</option>
-                            </select>
-                            <div class="alert alert-danger"
-                                *ngIf="section.invalid && (section.dirty || section.touched)">
-                                <div *ngIf="section.errors.required">Requerido</div>
                             </div>
                         </div>
                     </div>

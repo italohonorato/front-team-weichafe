@@ -28,7 +28,7 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                     <a class="dropdown-item" [routerLink]="'registerStudent'">
-                        <span>&nbsp;Ingresar</span>
+                        <span>&nbsp;Registrar</span>
                     </a>
                 </div>
             </li>
@@ -38,18 +38,15 @@
                     <span>&nbsp;Asistencia</span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" [routerLink]="'addAssistence'">
+                    <a class="dropdown-item" [routerLink]="'addAssistance'">
                         <span>&nbsp;Ingresar</span>
                     </a>
                     <div role="separator" class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">
+                    <a class="dropdown-item" [routerLink]="'queryAssistance'">
                         <span>&nbsp;Consultar</span>
                     </a>
                 </div>
             </li>
-            <!-- <li class="nav-item">
-                <a class="nav-link" [routerLink]="'/login'">Admin</a>
-            </li> -->
         </ul>
         <a class="float-right btn btn-danger btn-round my-2 my-sm-0" type="submit" *ngIf="!userLoggedIn()"
             [routerLink]="'/login'">Iniciar Sesión</a>

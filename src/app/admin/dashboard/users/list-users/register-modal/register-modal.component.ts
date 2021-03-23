@@ -31,11 +31,10 @@ export class RegisterModalComponent implements OnInit, OnChanges {
     name: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
-    pass: ['', Validators.required],
+    pass: ['', [Validators.required, Validators.minLength(6)]],
     rut: ['', Validators.required],
     dob: ['', Validators.required],
-    role: [[RoleDoc], Validators.required],
-    section: [[], Validators.required]
+    role: [[RoleDoc], Validators.required]
   });
   // Getters registerForm
   get name() { return this.registerForm.get('name') }
@@ -45,7 +44,6 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   get rut() { return this.registerForm.get('rut') }
   get dob() { return this.registerForm.get('dob') }
   get role() { return this.registerForm.get('role') }
-  get section() { return this.registerForm.get('section') }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -115,8 +113,7 @@ export class RegisterModalComponent implements OnInit, OnChanges {
       rut: this.utilService.formatRut(this.user.data.rut + this.user.data.dv),
       dob: this.user.data.dob,
       pass: ['xxx'],
-      role: this.user.roleDoc.id,
-      section: this.user.data.section
+      role: this.user.roleDoc.id
     });
   }
 
@@ -130,8 +127,7 @@ export class RegisterModalComponent implements OnInit, OnChanges {
       pass: [''],
       rut: [''],
       dob: [''],
-      role: [['']],
-      section: [['']],
+      role: [['']]
     });
   }
 
@@ -158,8 +154,7 @@ export class RegisterModalComponent implements OnInit, OnChanges {
               dob: this.registerForm.get('dob').value,
               rut: +this.utilService.removeDotsAndDvRut(this.registerForm.get('rut').value),
               dv: this.utilService.getDvRut(this.registerForm.get('rut').value),
-              role: roleSelected.ref,
-              section: this.registerForm.get('section').value
+              role: roleSelected.ref
             };
             // Creates User on FireStore
             this.usersService.createUser(userInfo).then(fssResponse => {
@@ -205,8 +200,7 @@ export class RegisterModalComponent implements OnInit, OnChanges {
       dob: this.registerForm.get('dob').value,
       rut: +this.utilService.removeDotsAndDvRut(this.registerForm.get('rut').value),
       dv: this.utilService.getDvRut(this.registerForm.get('rut').value),
-      role: roleSelected.ref,
-      section: this.registerForm.get('section').value
+      role: roleSelected.ref
     };
 
     this.usersService.updateUser(this.user.id, userUpdated).then(response => {

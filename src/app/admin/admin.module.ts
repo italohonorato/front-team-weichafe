@@ -32,6 +32,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { ReactiveFormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { AuthGuard } from '../guards/authorization/auth.guard';
+import { QueryAssistanceComponent } from './dashboard/asistencia/queryAssistance/query-assistance/query-assistance.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { AuthGuard } from '../guards/authorization/auth.guard';
     RegisterModalComponent,
     IngresarAsistenciaComponent,
     StudentsComponent,
-    RegisterStudentComponent
+    RegisterStudentComponent,
+    QueryAssistanceComponent
   ],
   imports: [
     CommonModule,

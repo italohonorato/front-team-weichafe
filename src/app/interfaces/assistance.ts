@@ -1,4 +1,5 @@
-import { User } from "../models/user/user";
+import { User } from "./user";
+
 
 
 export interface Assistance {

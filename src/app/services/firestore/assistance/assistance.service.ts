@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, Action, DocumentSnapshot } from '@angular/fire/firestore';
+import { AngularFirestore, Action, DocumentSnapshot, DocumentChangeAction } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Assistance } from 'src/app/interfaces/assistance';
 import { User } from 'src/app/interfaces/user';
@@ -28,6 +28,17 @@ export class AssistanceService {
       return this.assistanceRef.doc(documentId).snapshotChanges();
     } catch (error) {
       console.log(`UsersService::getUser Error -> ${error}`);
+      return error;
+    }
+  }
+
+  getAssistanceByDateAndSection(assistanceDate: string, section: string): Observable<DocumentChangeAction<unknown>[]> {
+    try {
+      return this.fireStore.collection('assistances',
+        ref => ref.where('assistance_date', '==', assistanceDate).where('section', '==', section))
+        .snapshotChanges();
+    } catch (error) {
+      console.log(`AssistanceService::getAssistanceByDateAndSection Error -> ${error}`);
       return error;
     }
   }
