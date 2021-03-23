@@ -130,11 +130,11 @@ export class IngresarAsistenciaComponent implements OnInit {
 
       const assistanceDate = this.assistanceForm.get('assistanceDate').value;
       const sectionSelected = this.assistanceForm.get('section').value;
-      let assistance: Assistance = {
+      const assistance: Assistance = {
         assistance_date: assistanceDate,
         section: sectionSelected,
-        user_list: list,
-      }
+        user_list: list
+      };
 
       this.assistanceService.createAssistance(assistance).then(response => {
         Swal.fire('Asistencia Ingresado',

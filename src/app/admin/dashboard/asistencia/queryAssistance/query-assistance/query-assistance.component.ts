@@ -129,8 +129,6 @@ export class QueryAssistanceComponent implements OnInit {
           userDoc.data = this.extractUserData(userData.payload.doc.data());
           return userDoc;
         });
-        this.dataSource = new MatTableDataSource<UserDoc>(this.studentsBySection);
-        this.dataSource.paginator = this.paginator;
 
         // getting the assistance by date and section
         this.assistanceService.getAssistanceByDateAndSection(selectedDate, selectedSection)
@@ -139,6 +137,8 @@ export class QueryAssistanceComponent implements OnInit {
               Swal.fire('Consulta Asistencia', 'No se han registrado Asistenicas para la fecha consultada', 'info');
               return;
             }
+            this.dataSource = new MatTableDataSource<UserDoc>(this.studentsBySection);
+            this.dataSource.paginator = this.paginator;
 
             let rowCount = 0;
             const assistance = snapshot.map(userData => {
