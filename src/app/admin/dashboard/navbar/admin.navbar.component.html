@@ -2,7 +2,7 @@
     <a class="navbar-brand" href="#">
         <img src="../../../assets/img/escudo-gojuryu.png" width="30" height="30" class="d-inline-block align-top"
             alt="">
-        Inicio
+        HOME
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
         aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,7 @@
                     <a class="dropdown-item" [routerLink]="'addAssistence'">
                         <span>&nbsp;Ingresar</span>
                     </a>
+                    <div role="separator" class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">
                         <span>&nbsp;Consultar</span>
                     </a>
@@ -52,7 +53,18 @@
         </ul>
         <a class="float-right btn btn-danger btn-round my-2 my-sm-0" type="submit" *ngIf="!userLoggedIn()"
             [routerLink]="'/login'">Iniciar Sesión</a>
-        <button class="float-right btn btn-danger btn-round my-2 my-sm-0" type="submit" *ngIf="userLoggedIn()"
-            (click)="onLogout()">Cerrar Sesión</button>
+        <li class="float-right nav-item dropdown">
+            <button class="btn btn-danger btn-round my-2 my-sm-0 dropdown-toggle" href="#" type="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{getCurrentUser()}}
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" (click)="onLogout()">
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </li>
+        <!-- <button class="float-right btn btn-danger btn-round my-2 my-sm-0" type="submit" *ngIf="userLoggedIn()"
+            (click)="onLogout()">Cerrar Sesión</button> -->
     </div>
 </nav>

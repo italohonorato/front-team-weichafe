@@ -16,66 +16,101 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   ) { }
 
   canLoad(route: Route, segments: UrlSegment[]): boolean | Promise<boolean> | Observable<boolean> {
+    console.log('canLoad user logged in -> ' + localStorage.getItem('userLoggedIn'));
     try {
-      this.fireBaseService.currentUser().then(response => {
-        if (response !== null && response.uid !== null) {
-          this.activate = true;
-        } else {
-          Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
-          this.activate = false;
-          this.router.navigate(['/login']);
-        }
-        console.log('canLoad -> ' + this.activate);
-        return this.activate;
-      });
+      if (localStorage.getItem('userLoggedIn') == null) {
+        console.log('canLoad -> false');
+        Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
+        this.activate = false;
+        this.router.navigate(['/login']);
+        return false;
+      } else {
+        console.log('canLoad -> true');
+
+        return true;
+      }
     } catch (error) {
       console.log('Error AuthGuard::canLoad ->' + error);
-      Swal.fire('Acceso Denegado', 'Ruta protegida', 'info');
-      return this.activate;
+      Swal.fire('Acceso Denegado', 'Ruta protegida', 'info')
+      return false;
     }
   }
 
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     try {
-      console.log(childRoute);
-      this.fireBaseService.currentUser().then(response => {
-        if (response !== null && response.uid !== null) {
-          this.activate = true;
-        } else {
-          Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
-          this.activate = false;
-          this.router.navigate(['/login']);
-        }
-        console.log('CanActivateChild -> ' + this.activate);
-        return this.activate;
-      });
+      if (localStorage.getItem('userLoggedIn') == null) {
+        console.log('canActivateChild -> false');
+        Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
+        this.activate = false;
+        this.router.navigate(['/login']);
+        return false;
+      } else {
+        console.log('canActivateChild -> true');
+
+        return true;
+      }
     } catch (error) {
-      console.log('Error AuthGuard::AuthGuard ->' + error);
-      Swal.fire('Acceso Denegado', 'Ruta protegida', 'info');
-      return this.activate;
+      console.log('Error AuthGuard::canActivateChild ->' + error);
+      Swal.fire('Acceso Denegado', 'Ruta protegida', 'info')
+      return false;
     }
+    // try {
+    //   console.log(childRoute);
+    //   this.fireBaseService.currentUser().then(response => {
+    //     if (response !== null && response.uid !== null) {
+    //       this.activate = true;
+    //     } else {
+    //       Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
+    //       this.activate = false;
+    //       this.router.navigate(['/login']);
+    //     }
+    //     console.log('CanActivateChild -> ' + this.activate);
+    //     return this.activate;
+    //   });
+    // } catch (error) {
+    //   console.log('Error AuthGuard::AuthGuard ->' + error);
+    //   Swal.fire('Acceso Denegado', 'Ruta protegida', 'info');
+    //   return this.activate;
+    // }
   }
 
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     try {
-      this.fireBaseService.currentUser().then(response => {
-        if (response !== null && response.uid !== null) {
-          this.activate = true;
-        } else {
-          Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
-          this.activate = false;
-          this.router.navigate(['/home']);
-        }
-        console.log('CanActivate -> ' + this.activate);
-        return this.activate;
-      });
+      if (localStorage.getItem('userLoggedIn') == null) {
+        console.log('canActivate -> false');
+        Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
+        this.activate = false;
+        this.router.navigate(['/login']);
+        return false;
+      } else {
+        console.log('canActivate -> true');
+
+        return true;
+      }
     } catch (error) {
-      console.log('Error AuthGuard::AuthGuard ->' + error);
-      Swal.fire('Acceso Denegado', 'Ruta protegida', 'info');
-      return this.activate;
+      console.log('Error AuthGuard::canActivate ->' + error);
+      Swal.fire('Acceso Denegado', 'Ruta protegida', 'info')
+      return false;
     }
+    // try {
+    //   this.fireBaseService.currentUser().then(response => {
+    //     if (response !== null && response.uid !== null) {
+    //       this.activate = true;
+    //     } else {
+    //       Swal.fire('Acceso Denegado', 'Ud. No está autorizado para acceder a esta URL', 'warning');
+    //       this.activate = false;
+    //       this.router.navigate(['/home']);
+    //     }
+    //     console.log('CanActivate -> ' + this.activate);
+    //     return this.activate;
+    //   });
+    // } catch (error) {
+    //   console.log('Error AuthGuard::AuthGuard ->' + error);
+    //   Swal.fire('Acceso Denegado', 'Ruta protegida', 'info');
+    //   return this.activate;
+    // }
   }
 
 }

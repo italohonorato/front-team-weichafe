@@ -14,6 +14,10 @@ export class AdminNavbarComponent implements OnInit {
   ngOnInit() {
   }
 
+  getCurrentUser(): string {
+    return localStorage.getItem('userLoggedIn');
+  }
+
   userLoggedIn(): boolean {
     return localStorage.getItem('userLoggedIn') ? true : false;
   }

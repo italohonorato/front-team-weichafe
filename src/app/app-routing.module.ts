@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { auth } from 'firebase';
 import { AuthenticationComponent } from './components/authentication/authentication/authentication.component';
 import { HomeComponent } from './components/home/home.component';
 import { AuthGuard } from './guards/authorization/auth.guard';
@@ -10,7 +11,8 @@ const routes: Routes = [
   { path: 'login', component: AuthenticationComponent },
   {
     path: 'admin',
-    loadChildren: () => import('./admin/admin.module').then(module => module.AdminModule)
+    loadChildren: () => import('./admin/admin.module').then(module => module.AdminModule),
+    canActivateChild: [AuthGuard]
   },
   { path: '**', redirectTo: '/home', pathMatch: 'full' }];
 

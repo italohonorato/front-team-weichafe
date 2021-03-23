@@ -11,16 +11,22 @@ import { StudentsComponent } from './dashboard/students/students/students.compon
 
 const routes: Routes = [
   {
-    path: '',
-    children: [{
-      path: 'dashboard',
-      component: DashboardComponent,
-      children: [
-        { path: 'registerUser', component: ListUsersComponent },
-        { path: 'addAssistence', component: IngresarAsistenciaComponent },
-        { path: 'registerStudent', component: StudentsComponent }
-      ]
-    }]
+    path: 'dashboard', component: DashboardComponent,
+    children: [
+      { path: 'registerUser', component: ListUsersComponent },
+      { path: 'addAssistence', component: IngresarAsistenciaComponent },
+      { path: 'registerStudent', component: StudentsComponent }
+    ]
+    // path: '',
+    // children: [{
+    //   path: 'dashboard',
+    //   component: DashboardComponent,
+    //   children: [
+    //     { path: 'registerUser', component: ListUsersComponent },
+    //     { path: 'addAssistence', component: IngresarAsistenciaComponent },
+    //     { path: 'registerStudent', component: StudentsComponent }
+    //   ]
+    // }]
   }
 
 ];
