@@ -30,7 +30,7 @@ export class RegisterStudentComponent implements OnInit, OnDestroy, OnChanges {
   studentForm = this.formBuilder.group({
     name: ['', Validators.required],
     lastName: ['', Validators.required],
-    email: ['', [Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+    email: ['', [Validators.required, Validators.email]],
     rut: ['', Validators.required],
     dob: ['', Validators.required],
     section: [[], Validators.required]

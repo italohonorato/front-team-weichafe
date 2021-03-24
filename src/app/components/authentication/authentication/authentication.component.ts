@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 export class AuthenticationComponent implements OnInit {
 
   loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+    email: ['', [Validators.required, Validators.email]],
     pass: ['', Validators.required]
   });
 

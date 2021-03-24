@@ -34,7 +34,7 @@ export class RegisterModalComponent implements OnInit, OnChanges, OnDestroy {
   registerForm = this.formBuilder.group({
     name: ['', Validators.required],
     lastName: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+    email: ['', [Validators.required, Validators.email]],
     pass: ['', [Validators.required, Validators.minLength(6)]],
     rut: [, Validators.required],
     dob: ['', Validators.required],
