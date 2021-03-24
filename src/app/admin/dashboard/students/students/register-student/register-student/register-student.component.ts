@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { Role } from 'src/app/interfaces/role';
 import { Sections } from 'src/app/interfaces/sections';
 import { User } from 'src/app/interfaces/user';
@@ -17,8 +18,9 @@ import Swal from 'sweetalert2';
   templateUrl: './register-student.component.html',
   styleUrls: ['./register-student.component.css']
 })
-export class RegisterStudentComponent implements OnInit {
+export class RegisterStudentComponent implements OnInit, OnDestroy, OnChanges {
 
+  subscriptionArr = new Array<Subscription>();
   public roles: RoleDoc[] = new Array<RoleDoc>();
   public sections: Sections[] = new Array<Sections>();
   @Input() user: UserDoc;
@@ -34,12 +36,12 @@ export class RegisterStudentComponent implements OnInit {
     section: [[], Validators.required]
   });
   // Getters registerForm
-  get name() { return this.studentForm.get('name') }
-  get lastName() { return this.studentForm.get('lastName') }
-  get email() { return this.studentForm.get('email') }
-  get rut() { return this.studentForm.get('rut') }
-  get dob() { return this.studentForm.get('dob') }
-  get section() { return this.studentForm.get('section') }
+  get name() { return this.studentForm.get('name'); }
+  get lastName() { return this.studentForm.get('lastName'); }
+  get email() { return this.studentForm.get('email'); }
+  get rut() { return this.studentForm.get('rut'); }
+  get dob() { return this.studentForm.get('dob'); }
+  get section() { return this.studentForm.get('section'); }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -49,6 +51,11 @@ export class RegisterStudentComponent implements OnInit {
     private rolesService: RolesService,
     private sectionsService: SectionsService
   ) { }
+
+  ngOnDestroy(): void {
+    console.log('Ejecuntando RegisterStudentComponent::ngOnDestroy...');
+    this.subscriptionArr.forEach(subscription => subscription.unsubscribe());
+  }
 
   resetSelectedUserValue(value: boolean) {
     this.resetSelectedUserEvent.emit(value);
@@ -68,7 +75,7 @@ export class RegisterStudentComponent implements OnInit {
   }
 
   getStudentrole() {
-    this.rolesService.getRoleByName('ALUMNO').subscribe(snapshot => {
+    const subscription = this.rolesService.getRoleByName('ALUMNO').subscribe(snapshot => {
       this.roles = snapshot.map(data => {
         let rolDoc = new RoleDoc();
         rolDoc.id = data.payload.doc.id;
@@ -77,18 +84,22 @@ export class RegisterStudentComponent implements OnInit {
         return rolDoc;
       });
     });
+
+    this.subscriptionArr.push(subscription);
   }
 
   getAllSections() {
-    this.sectionsService.getAllSections().subscribe(snapshot => {
+    const subscription = this.sectionsService.getAllSections().subscribe(snapshot => {
       this.sections = snapshot.map(data => {
-        let unknownObj = data.payload.doc.data();
-        let section = {
+        const unknownObj = data.payload.doc.data();
+        const section = {
           name: unknownObj['name']
-        }
+        };
         return section;
       });
-    })
+    });
+
+    this.subscriptionArr.push(subscription);
   }
 
   extractRoleData(data: unknown): Role {
@@ -136,7 +147,7 @@ export class RegisterStudentComponent implements OnInit {
 
   onCreate() {
     try {
-      let roleSelected = this.roles[0];
+      const roleSelected = this.roles[0];
       // Setting User Info
       const userInfo: User = {
         email: this.studentForm.get('email').value,
@@ -167,7 +178,7 @@ export class RegisterStudentComponent implements OnInit {
   }
 
   onUpdate() {
-    let roleSelected = this.roles[0];
+    const roleSelected = this.roles[0];
     const userUpdated: User = {
       email: this.studentForm.get('email').value,
       name: this.studentForm.get('name').value,

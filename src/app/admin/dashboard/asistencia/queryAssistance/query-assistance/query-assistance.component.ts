@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
@@ -18,9 +18,9 @@ import Swal from 'sweetalert2';
   templateUrl: './query-assistance.component.html',
   styleUrls: ['./query-assistance.component.css']
 })
-export class QueryAssistanceComponent implements OnInit {
+export class QueryAssistanceComponent implements OnInit, OnDestroy {
 
-  getAllUsersSubscription: Subscription;
+  subscriptionArr = new Array<Subscription>();
   usersList: User[];
   assistanceList: Assistance[];
   studentsBySection: UserDoc[];
@@ -37,8 +37,8 @@ export class QueryAssistanceComponent implements OnInit {
     section: [[], Validators.required]
   });
   // Getters assistanceForm
-  get assistanceDate() { return this.assistanceForm.get('assistanceDate') }
-  get section() { return this.assistanceForm.get('section') }
+  get assistanceDate() { return this.assistanceForm.get('assistanceDate'); }
+  get section() { return this.assistanceForm.get('section'); }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -48,58 +48,32 @@ export class QueryAssistanceComponent implements OnInit {
     private assistanceService: AssistanceService
   ) { }
 
+  ngOnDestroy(): void {
+    console.log('Ejecuntando QueryAssistanceComponent::ngOnDestroy...');
+    this.subscriptionArr.forEach(subscription => subscription.unsubscribe());
+  }
+
   ngOnInit() {
     this.getAllSections();
   }
 
   getAllSections() {
-    this.sectionsService.getAllSections().subscribe(snapshot => {
+    const subscription = this.sectionsService.getAllSections().subscribe(snapshot => {
       this.sections = snapshot.map(data => {
-        let unknownObj = data.payload.doc.data();
-        let section = {
+        const unknownObj = data.payload.doc.data();
+        const section = {
           name: unknownObj['name']
-        }
+        };
         return section;
       });
-    })
+    });
+
+    this.subscriptionArr.push(subscription);
   }
 
   formatRut(run: number, dv: string) {
     return this.utilService.formatRut(run.toString() + dv);
   }
-
-  // getAssitance() {
-  //   const selectedDate = this.assistanceForm.get('assistanceDate').value;
-  //   const selectedSection = this.assistanceForm.get('section').value;
-  //   this.assistanceService.getAssistanceByDateAndSection(selectedDate, selectedSection)
-  //     .subscribe(snapshot => {
-  //       if (snapshot.length === 0) {
-  //         Swal.fire('Consulta Asistencia', 'No se han registrado Asistenicas para la fecha consultada', 'info');
-  //         return;
-  //       }
-
-  //       let rowCount = 0;
-  //       const assistance = snapshot.map(userData => {
-  //         return this.extractAssistanceData(userData.payload.doc.data());
-  //       });
-  //       let assistanceList = assistance[0];
-  //       assistanceList.user_list.sort((a, b) => (a.lastName > b.lastName) ? 1 : (b.lastName > a.lastName) ? -1 : 0);
-  //       const userDocArr = assistanceList.user_list.map(user => {
-  //         const userDoc: UserDoc = {
-  //           id: '',
-  //           position: ++rowCount,
-  //           data: user
-  //         };
-  //         return userDoc;
-  //       });
-  //       this.dataSource = new MatTableDataSource<UserDoc>(userDocArr);
-  //       this.dataSource.paginator = this.paginator;
-  //     },
-  //       error => {
-  //         console.log(`QueryAssistanceComponent::getAssitance Error -> ${error}`);
-  //         Swal.fire('Error Consulta Asistencia', 'Se ha producido un error al consultar Asistencia', 'error');
-  //       });
-  // }
 
   extractAssistanceData(data: unknown): Assistance {
     const assistance: Assistance = {
@@ -115,7 +89,7 @@ export class QueryAssistanceComponent implements OnInit {
     const selectedSection = this.assistanceForm.get('section').value;
     const selectedDate = this.assistanceForm.get('assistanceDate').value;
     // getting all students of a given section
-    this.getAllUsersSubscription = this.userService.getUsersBySection(selectedSection).subscribe(
+    const subscription = this.userService.getUsersBySection(selectedSection).subscribe(
       snapshot => {
         let rowCount = 0;
         snapshot.sort((a, b) =>
@@ -131,25 +105,25 @@ export class QueryAssistanceComponent implements OnInit {
         });
 
         // getting the assistance by date and section
-        this.assistanceService.getAssistanceByDateAndSection(selectedDate, selectedSection)
-          .subscribe(snapshot => {
-            if (snapshot.length === 0) {
+        const subscription2 = this.assistanceService.getAssistanceByDateAndSection(selectedDate, selectedSection)
+          .subscribe(snapshot2 => {
+            if (snapshot2.length === 0) {
               Swal.fire('Consulta Asistencia', 'No se han registrado Asistenicas para la fecha consultada', 'info');
               return;
             }
             this.dataSource = new MatTableDataSource<UserDoc>(this.studentsBySection);
             this.dataSource.paginator = this.paginator;
 
-            let rowCount = 0;
-            const assistance = snapshot.map(userData => {
-              return this.extractAssistanceData(userData.payload.doc.data());
+            let rowCount2 = 0;
+            const assistance = snapshot2.map(data => {
+              return this.extractAssistanceData(data.payload.doc.data());
             });
             let assistanceList = assistance[0];
             assistanceList.user_list.sort((a, b) => (a.lastName > b.lastName) ? 1 : (b.lastName > a.lastName) ? -1 : 0);
             const userDocArr = assistanceList.user_list.map(user => {
               const userDoc: UserDoc = {
                 id: '',
-                position: ++rowCount,
+                position: ++rowCount2,
                 data: user
               };
               return userDoc;
@@ -166,11 +140,15 @@ export class QueryAssistanceComponent implements OnInit {
               console.log(`QueryAssistanceComponent::getAssitance Error -> ${error}`);
               Swal.fire('Error Consulta Asistencia', 'Se ha producido un error al consultar Asistencia', 'error');
             });
+
+        this.subscriptionArr.push(subscription2);
       }, error => {
         console.log(`IngresarAsistenciaComponent::getUsersBySection Error -> ${error}`);
         Swal.fire('Error al consultar Usuarios', error, 'error');
       }
     );
+
+    this.subscriptionArr.push(subscription);
   }
 
   extractUserData(data: unknown): User {

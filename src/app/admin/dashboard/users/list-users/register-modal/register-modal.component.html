@@ -38,7 +38,7 @@
                     <div class="form-group row">
                         <label for="run" class="col-sm-2 col-form-label">Run</label>
                         <div class="col-sm-10">
-                            <input class="form-control" formControlName="rut" (blur)="rut ? formatRut() : null"
+                            <input class="form-control" formControlName="rut" (blur)="rut.valid? formatRut() : null"
                                 id="run" />
                             <div class="alert alert-danger" *ngIf="rut.invalid && (rut.dirty || rut.touched)">
                                 <div *ngIf="rut.errors.required">Favor ingrese Rut</div>

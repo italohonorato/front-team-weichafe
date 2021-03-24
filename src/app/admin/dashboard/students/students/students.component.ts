@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DocumentReference } from '@angular/fire/firestore';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
@@ -14,9 +14,9 @@ import Swal from 'sweetalert2';
   templateUrl: './students.component.html',
   styleUrls: ['./students.component.css']
 })
-export class StudentsComponent implements OnInit {
+export class StudentsComponent implements OnInit, OnDestroy {
 
-  getAllUsersSubscription: Subscription;
+  subscriptionArr = new Array<Subscription>();
   usersList: User[];
   userDocList: UserDoc[];
   displayedColumns: string[] = ['name', 'lastName', 'run', 'email', 'dob', 'section', 'opciones'];
@@ -29,8 +29,8 @@ export class StudentsComponent implements OnInit {
     private uitlService: UtilService) { }
 
   ngOnDestroy(): void {
-    console.log('Ejecuntando ngOnDestroy...');
-    this.getAllUsersSubscription.unsubscribe();
+    console.log('Ejecuntando StudentsComponent::ngOnDestroy...');
+    this.subscriptionArr.forEach(subscription => subscription.unsubscribe());
   }
 
   ngOnInit() {
@@ -38,7 +38,8 @@ export class StudentsComponent implements OnInit {
   }
 
   getAllUsers() {
-    this.getAllUsersSubscription = this.userService.getAllUsers().subscribe(snapshot => {
+    const subscription = this.userService.getAllUsers().subscribe(snapshot => {
+      snapshot = snapshot.filter(snapData => snapData.payload.doc.data()['section'] !== undefined);
       this.userDocList = snapshot.map(userData => {
         let userDoc: UserDoc = new UserDoc();
         userDoc.id = userData.payload.doc.id;
@@ -52,6 +53,8 @@ export class StudentsComponent implements OnInit {
       console.log(`ListUsersComponent::getAllUsers Error -> ${error}`);
       Swal.fire('Error al consultar Usuarios', error, 'error');
     });
+
+    this.subscriptionArr.push(subscription);
   }
 
   extractUserData(data: unknown): User {

@@ -1,7 +1,8 @@
 import { stringify } from '@angular/compiler/src/util';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { DocumentReference } from '@angular/fire/firestore';
 import { Validators, FormBuilder } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { Role } from 'src/app/interfaces/role';
 import { Sections } from 'src/app/interfaces/sections';
 import { User } from 'src/app/interfaces/user';
@@ -19,12 +20,15 @@ import Swal from 'sweetalert2';
   templateUrl: './register-modal.component.html',
   styleUrls: ['./register-modal.component.css']
 })
-export class RegisterModalComponent implements OnInit, OnChanges {
+export class RegisterModalComponent implements OnInit, OnChanges, OnDestroy {
 
+  subscriptionArr = new Array<Subscription>();
   public roles: RoleDoc[] = new Array<RoleDoc>();
   public sections: Sections[] = new Array<Sections>();
   @Input() user: UserDoc;
+  @Input() updateValidators: boolean;
   @Output() resetSelectedUserEvent = new EventEmitter<boolean>();
+  @Output() resetUpdateValidatorsEvent = new EventEmitter<boolean>();
   @ViewChild('closebutton', { static: true }) closebutton;
   // Form
   registerForm = this.formBuilder.group({
@@ -32,18 +36,18 @@ export class RegisterModalComponent implements OnInit, OnChanges {
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
     pass: ['', [Validators.required, Validators.minLength(6)]],
-    rut: ['', Validators.required],
+    rut: [, Validators.required],
     dob: ['', Validators.required],
     role: [[RoleDoc], Validators.required]
   });
   // Getters registerForm
-  get name() { return this.registerForm.get('name') }
-  get lastName() { return this.registerForm.get('lastName') }
-  get email() { return this.registerForm.get('email') }
-  get pass() { return this.registerForm.get('pass') }
-  get rut() { return this.registerForm.get('rut') }
-  get dob() { return this.registerForm.get('dob') }
-  get role() { return this.registerForm.get('role') }
+  get name() { return this.registerForm.get('name'); }
+  get lastName() { return this.registerForm.get('lastName'); }
+  get email() { return this.registerForm.get('email'); }
+  get pass() { return this.registerForm.get('pass'); }
+  get rut() { return this.registerForm.get('rut'); }
+  get dob() { return this.registerForm.get('dob'); }
+  get role() { return this.registerForm.get('role'); }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -54,15 +58,25 @@ export class RegisterModalComponent implements OnInit, OnChanges {
     private sectionsService: SectionsService) {
 
   }
+  ngOnDestroy(): void {
+    console.log('Ejecuntando RegisterModalComponent::ngOnDestroy...');
+    this.subscriptionArr.forEach(subscription => subscription.unsubscribe());
+  }
 
   resetSelectedUserValue(value: boolean) {
     this.resetSelectedUserEvent.emit(value);
+  }
+
+  resetUpdateValidatorsValue(value: boolean) {
+    this.resetUpdateValidatorsEvent.emit(value);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     for (const propName in changes) {
       if (propName === 'user' && changes[propName].currentValue !== undefined) {
         this.loadUserInfo();
+      } else if (propName === 'updateValidators' && changes[propName].currentValue === true) {
+        this.registerForm.get('pass').setValidators([Validators.required, Validators.minLength(6)]);
       }
     }
   }
@@ -73,7 +87,7 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   }
 
   getAllRoles() {
-    this.rolesService.getAllRoles().subscribe(snapshot => {
+    const subscription = this.rolesService.getAllRoles().subscribe(snapshot => {
       this.roles = snapshot.map(data => {
         let rolDoc = new RoleDoc();
         rolDoc.id = data.payload.doc.id;
@@ -82,18 +96,22 @@ export class RegisterModalComponent implements OnInit, OnChanges {
         return rolDoc;
       });
     });
+
+    this.subscriptionArr.push(subscription);
   }
 
   getAllSections() {
-    this.sectionsService.getAllSections().subscribe(snapshot => {
+    const subscription = this.sectionsService.getAllSections().subscribe(snapshot => {
       this.sections = snapshot.map(data => {
-        let unknownObj = data.payload.doc.data();
-        let section = {
+        const unknownObj = data.payload.doc.data();
+        const section = {
           name: unknownObj['name']
-        }
+        };
         return section;
       });
-    })
+    });
+
+    this.subscriptionArr.push(subscription);
   }
 
   extractRoleData(data: unknown): Role {
@@ -106,13 +124,14 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   }
 
   loadUserInfo() {
+    this.registerForm.get('pass').clearValidators();
     this.registerForm.patchValue({
       name: this.user.data.name,
       lastName: this.user.data.lastName,
       email: this.user.data.email,
       rut: this.utilService.formatRut(this.user.data.rut + this.user.data.dv),
       dob: this.user.data.dob,
-      pass: ['xxx'],
+      pass: ['1234567890'],
       role: this.user.roleDoc.id
     });
   }
@@ -120,6 +139,7 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   resetTaskForm() {
     this.user = undefined;
     this.resetSelectedUserValue(true);
+    this.resetUpdateValidatorsValue(false);
     this.registerForm.patchValue({
       name: [''],
       lastName: [''],
@@ -140,8 +160,8 @@ export class RegisterModalComponent implements OnInit, OnChanges {
 
   onCreate() {
     try {
-      let idRolSelected = this.registerForm.get('role').value;
-      let roleSelected = this.roles.find(role => role.id === idRolSelected);
+      const idRolSelected = this.registerForm.get('role').value;
+      const roleSelected = this.roles.find(role => role.id === idRolSelected);
       this.fireBaseService.createUser(this.registerForm.get('email').value, this.registerForm.get('pass').value)
         .then(response => {
           if (response !== undefined && response.user.uid) {
@@ -190,8 +210,8 @@ export class RegisterModalComponent implements OnInit, OnChanges {
   }
 
   onUpdate() {
-    let idRolSelected = this.registerForm.get('role').value;
-    let roleSelected = this.roles.find(role => role.id === idRolSelected);
+    const idRolSelected = this.registerForm.get('role').value;
+    const roleSelected = this.roles.find(role => role.id === idRolSelected);
     const userUpdated: User = {
       uid: this.user.data.uid,
       email: this.registerForm.get('email').value,

@@ -8,7 +8,7 @@
     <div class="row mt-4">
         <div class="col-md-12">
             <button type="button" mat-raised-button color="warn" data-toggle="modal" data-target="#registerModal"
-                id="openModalButton" data-backdrop='static' data-keyboard='false'>
+                id="openModalButton" data-backdrop='static' data-keyboard='false' (click)="setValidators()">
                 Registrar Usuario
             </button>
         </div>
@@ -86,4 +86,6 @@
         </div>
     </div>
 </div>
-<app-register-modal [user]="selectedUser" (resetSelectedUserEvent)="resetSelectedUser($event)"></app-register-modal>
+<app-register-modal [user]="selectedUser" [updateValidators]="updateValidators"
+    (resetSelectedUserEvent)="resetSelectedUser($event)" (resetUpdateValidatorsEvent)="resetUpdateValidators($event)">
+</app-register-modal>

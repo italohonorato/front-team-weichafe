@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Validators, FormBuilder } from '@angular/forms';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
@@ -18,9 +18,9 @@ import Swal from 'sweetalert2';
   templateUrl: './ingresar-asistencia.component.html',
   styleUrls: ['./ingresar-asistencia.component.css']
 })
-export class IngresarAsistenciaComponent implements OnInit {
+export class IngresarAsistenciaComponent implements OnInit, OnDestroy {
 
-  getAllUsersSubscription: Subscription;
+  subscriptionArr = new Array<Subscription>();
   usersList: User[];
   userDocList: UserDoc[];
   sections: Sections[] = new Array<Sections>();
@@ -36,8 +36,8 @@ export class IngresarAsistenciaComponent implements OnInit {
     section: [[], Validators.required]
   });
   // Getters assistanceForm
-  get assistanceDate() { return this.assistanceForm.get('assistanceDate') }
-  get section() { return this.assistanceForm.get('section') }
+  get assistanceDate() { return this.assistanceForm.get('assistanceDate'); }
+  get section() { return this.assistanceForm.get('section'); }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -47,7 +47,8 @@ export class IngresarAsistenciaComponent implements OnInit {
     private assistanceService: AssistanceService) { }
 
   ngOnDestroy(): void {
-    console.log('Ejecuntando ngOnDestroy...');
+    console.log('Ejecuntando IngresarAsistenciaComponent::ngOnDestroy...');
+    this.subscriptionArr.forEach(subscription => subscription.unsubscribe());
   }
 
   ngOnInit() {
@@ -55,20 +56,22 @@ export class IngresarAsistenciaComponent implements OnInit {
   }
 
   getAllSections() {
-    this.sectionsService.getAllSections().subscribe(snapshot => {
+    const subscription = this.sectionsService.getAllSections().subscribe(snapshot => {
       this.sections = snapshot.map(data => {
-        let unknownObj = data.payload.doc.data();
-        let section = {
+        const unknownObj = data.payload.doc.data();
+        const section = {
           name: unknownObj['name']
-        }
+        };
         return section;
       });
-    })
+    });
+
+    this.subscriptionArr.push(subscription);
   }
 
   getUsersBySection() {
     const sectionSelected = this.assistanceForm.get('section').value;
-    this.getAllUsersSubscription = this.userService.getUsersBySection(sectionSelected).subscribe(
+    const subscription = this.userService.getUsersBySection(sectionSelected).subscribe(
       snapshot => {
         let rowCount = 0;
         snapshot.sort((a, b) =>
@@ -89,6 +92,8 @@ export class IngresarAsistenciaComponent implements OnInit {
         Swal.fire('Error al consultar Usuarios', error, 'error');
       }
     );
+
+    this.subscriptionArr.push(subscription);
   }
 
   extractUserData(data: unknown): User {

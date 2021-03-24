@@ -22,12 +22,13 @@ import Swal from 'sweetalert2';
 })
 export class ListUsersComponent implements OnInit, OnDestroy {
 
-  getAllUsersSubscription: Subscription;
+  subscriptionArr = new Array<Subscription>();
   usersList: User[];
   userDocList: UserDoc[];
   displayedColumns: string[] = ['name', 'lastName', 'run', 'email', 'dob', 'role', 'opciones'];
   dataSource;
   selectedUser: UserDoc;
+  updateValidators = true;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
   constructor(
@@ -35,8 +36,8 @@ export class ListUsersComponent implements OnInit, OnDestroy {
     private uitlService: UtilService) { }
 
   ngOnDestroy(): void {
-    console.log('Ejecuntando ngOnDestroy...');
-    this.getAllUsersSubscription.unsubscribe();
+    console.log('Ejecuntando ListUsersComponent::ngOnDestroy...');
+    this.subscriptionArr.forEach(subscription => subscription.unsubscribe());
   }
 
   ngOnInit() {
@@ -44,7 +45,7 @@ export class ListUsersComponent implements OnInit, OnDestroy {
   }
 
   getAllUsers() {
-    this.getAllUsersSubscription = this.userService.getAllUsers().subscribe(snapshot => {
+    const subscription = this.userService.getAllUsers().subscribe(snapshot => {
       this.userDocList = snapshot.map(userData => {
         let userDoc: UserDoc = new UserDoc();
         userDoc.id = userData.payload.doc.id;
@@ -64,6 +65,8 @@ export class ListUsersComponent implements OnInit, OnDestroy {
       console.log(`ListUsersComponent::getAllUsers Error -> ${error}`);
       Swal.fire('Error al consultar Usuarios', error, 'error');
     });
+
+    this.subscriptionArr.push(subscription);
   }
 
   extractUserData(data: unknown): User {
@@ -84,6 +87,10 @@ export class ListUsersComponent implements OnInit, OnDestroy {
   editUser(user: UserDoc) {
     this.selectedUser = user;
     document.getElementById('openModalButton').click();
+  }
+
+  setValidators() {
+    this.updateValidators = true;
   }
 
   removeUser(userRef: UserDoc) {
@@ -116,6 +123,10 @@ export class ListUsersComponent implements OnInit, OnDestroy {
     }
   }
 
+  resetUpdateValidators(value: boolean) {
+    this.updateValidators = value;
+  }
+
   formatRut(run: number, dv: string) {
     return this.uitlService.formatRut(run.toString() + dv);
   }
@@ -131,10 +142,10 @@ export class ListUsersComponent implements OnInit, OnDestroy {
         roleDoc.data = {
           enabled: roleData['enabled'],
           roleName: roleData['roleName']
-        }
+        };
       }
 
       return roleDoc;
-    })
+    });
   }
 }
